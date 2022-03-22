@@ -1,0 +1,43 @@
+Network: 
+  name: DeepLabv3Plus
+  num_class: 4  
+
+EMA:
+  alpha: 0.99
+
+Optim:
+  name: Adam
+  lr: 0.04
+  weight_decay: 1e-4
+
+Lr_Scheduler:
+  name: PolyLR
+  step_size: 90
+  gamma: 0.1
+
+Dataset: 
+  root_dir: ./data/ACDC
+  patch_size: 256
+
+Labeled_Dataset:
+  num_patient: 20
+  batch_size: 4
+
+Unlabeled_Dataset:
+  batch_size: 4
+  aug_mode: cutout
+
+Training_Setting:
+  epoch: 300
+  device: cuda:0
+  save_dir: ./tmp_cps
+  
+Seed: 1234
+
+Reco_Loss:
+  is_available: True
+  strong_threshold: 0.97
+  weak_threshold: 0.7
+  temp: 0.5
+  num_queries: 256
+  num_nagetives: 512
