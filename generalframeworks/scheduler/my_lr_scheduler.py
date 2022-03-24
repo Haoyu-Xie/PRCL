@@ -1,3 +1,5 @@
+# Author: Haoyu Xie 
+
 from torch.optim.lr_scheduler import _LRScheduler
 
 class PolyLR(_LRScheduler):

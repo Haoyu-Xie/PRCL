@@ -1,8 +1,11 @@
-from turtle import pos
-from cv2 import contourArea
+# Author: Haoyu Xie
 import torch
 import torch.nn.functional as F
 import numpy as np
+import torch.nn as nn
+from generalframeworks.utils import simplex
+
+##### Used in Reco unsupervised learning #####
 
 def attention_threshold_loss(pred: torch.Tensor, pseudo_label: torch.Tensor, logits: torch.Tensor, strong_threshold):
     batch_size = pred.shape[0]
@@ -15,6 +18,8 @@ def attention_threshold_loss(pred: torch.Tensor, pseudo_label: torch.Tensor, log
     # torch.masked_select to select loss > 0 only leaved
     
     return weighted_loss
+
+##### Reco Loss #####
 
 def compute_reco_loss(rep: torch.Tensor, label, mask, prob, strong_threshold=1.0, temp=0.5, num_queries=256, num_negatives=256):
     batch_size, num_feat, rep_w, rep_h = rep.shape
@@ -99,5 +104,30 @@ def negative_index_sampler(samp_num, seg_num_list):
                                                 size=int(samp_num[i, j])).tolist()
     
     return negative_index
+
+##### Kullback-Leibler divergence #####
+
+class KL_Divergence_2D(nn.Module):
+
+    def __init__(self, reduce=False, eps=1e-10):
+        super().__init__()
+        self.reduce =reduce
+        self.eps = eps
+
+    def forward(self, p_prob: torch.Tensor, y_prob: torch.Tensor) -> torch.Tensor:
+        assert simplex(p_prob, 1), '{} must be probability'.format(p_prob)
+        assert simplex(y_prob, 1), '{} must be probability'.format(y_prob)
+
+        logp = (p_prob + self.eps).log()
+        logy = (y_prob + self.eps).log()
+        
+        ylogy = (y_prob * logy).sum(dim=1)
+        ylogp = (y_prob * logp).sum(dim=1)
+        if self.reduce:
+            return (ylogy - ylogp).mean()
+        else:
+            return ylogy - ylogp
+
+
 
 

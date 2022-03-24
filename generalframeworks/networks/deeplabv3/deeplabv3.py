@@ -1,10 +1,16 @@
+# Author: Haoyu Xie
+# Refer to the project: Roco
+# Version: v1.1 : Adding two parameters 'with_rep' and 'down_scale' to control whether to upsample and whether to output representation
 from .aspp import *
 from functools import partial
 
 
+
 class DeepLabv3Plus(nn.Module):
-    def __init__(self, orig_resnet, dilate_scale=16, num_classes=2, output_dim=256):
+    def __init__(self, orig_resnet, dilate_scale=16, num_classes=2, output_dim=256, with_rep=True, down_scale=False):
         super(DeepLabv3Plus, self).__init__()
+        self.with_rep = with_rep
+        self.down_scale = down_scale
         if dilate_scale == 8:
             orig_resnet.layer3.apply(partial(self._nostride_dilate, dilate=2))
             orig_resnet.layer4.apply(partial(self._nostride_dilate, dilate=4))
@@ -65,6 +71,7 @@ class DeepLabv3Plus(nn.Module):
                     m.padding = (dilate, dilate)
 
     def forward(self, x):
+        h_w = x.shape[2:]
         # with ResNet-50 Encoder
         x = self.resnet_relu1(self.resnet_bn1(self.resnet_conv1(x)))
         x = self.resnet_maxpool(x)
@@ -81,4 +88,9 @@ class DeepLabv3Plus(nn.Module):
         output_feature = F.interpolate(feature, size=x_low.shape[2:], mode='bilinear', align_corners=True)
         prediction = self.classifier(torch.cat([x_low, output_feature], dim=1))
         representation = self.representation(torch.cat([x_low, output_feature], dim=1))
-        return prediction, representation
+        if not self.down_scale:
+            prediction = F.interpolate(prediction, size=h_w, mode='bilinear', align_corners=True)
+        if self.with_rep:
+            return prediction, representation
+        else:
+            return prediction

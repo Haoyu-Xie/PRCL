@@ -35,10 +35,13 @@ class ACDC_Dataset(Dataset):
 
 class ACDC_Dataset(Dataset):
     def __init__(self, root_dir, save_dir: str, mode, meta_label=False):
+
         '''
-        mode in ['label', 'unlabel', 'val']
+        mode in ['label', 'unlabel', 'val'] prepared for one labeled dataset
+        mode in ['label_0', 'label_1', 'unlabel', 'val'] prepared for two labeled datasets
+
         '''
-        assert mode in ['label', 'unlabel', 'val'], 'mode must be in [label, unlabel, val]'
+        assert mode in ['label', 'unlabel', 'val', 'label_0', 'label_1'], 'mode must be in [label, unlabel, val, label_0, label_1]'
         self.root_dir = root_dir
         self.mode = mode 
         self.meta_label = meta_label
@@ -49,6 +52,16 @@ class ACDC_Dataset(Dataset):
                 self.sample_list = f.readlines()
             self.sample_list = [item.replace('\n', '') for item in self.sample_list]
         
+        if self.mode == 'label_0':
+            with open(self.save_dir + '/labeled_0_filename.txt', 'r') as f:
+                self.sample_list = f.readlines()
+            self.sample_list = [item.replace('\n', '') for item in self.sample_list]
+        
+        if self.mode == 'label_1':
+            with open(self.save_dir + '/labeled_1_filename.txt', 'r') as f:
+                self.sample_list = f.readlines()
+            self.sample_list = [item.replace('\n', '') for item in self.sample_list]
+
         if self.mode == 'unlabel':
             with open(self.save_dir + '/unlabeled_filename.txt', 'r') as f:
                 self.sample_list = f.readlines()
