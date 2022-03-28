@@ -30,7 +30,7 @@ parser_args = yaml_parser()
 
 #pprint('--> Input args:')
 with open('./config/uareco_config.yaml', 'r') as f:
-    config = yaml.load(f.read(), Loader=yaml.FullLoader)
+    config = yaml.load(f.read())
 config = dict_merge(config, parser_args, True)
 #pprint(config)
 print('Hello, it is {} now'.format(now_time()))
@@ -96,6 +96,7 @@ if __name__ == '__main__':
         unlab_dice.reset()
         val_dice.reset()
         train_iter_tqdm = tqdm_(range(iter_max))
+        uncertainty_list = []
         for i in train_iter_tqdm:
             lab_image, lab_label = train_lab_iter.__next__()
             lab_image, lab_label = lab_image.to(device), lab_label.to(device) #torch.Size([4, 1, 256, 256]) torch.Size([4, 256, 256])
@@ -116,6 +117,7 @@ if __name__ == '__main__':
                 # Uncertainty
                 uncertainty = -(torch.log(pseudo_probs_raw) * pseudo_probs_raw).sum(dim=1) # torch.Size([4, 256, 256])
                 uncertainty = F.normalize(uncertainty, dim=0)
+                uncertainty_list.append(uncertainty)
                 
                 # Random scale and  and crop, We ommit the imagenet normalization.!!!!! and we change the crop_size here instead of (512, 512)
                 image_u_aug, label_u_aug, uncer_u_aug = batch_transform(unlab_image, pseudo_labels, uncertainty,\
@@ -145,7 +147,8 @@ if __name__ == '__main__':
             ##### Reco Loss #####
             if config['Reco_Loss']['is_available']:
                 with torch.no_grad():
-                    mask_u_aug = uncer_u_aug.ge(config['Reco_Loss']['weak_threshold']).float() # confidence from logits torch.Size([4, 256, 256]) ~~~~~
+                    # mask_u_aug = uncer_u_aug.ge(config['Reco_Loss']['weak_threshold']).float() # confidence from logits torch.Size([4, 256, 256]) ~~~~~
+                    mask_u_aug = uncer_u_aug.ge(uncer_u_aug.mean()).float() # confidence from logits torch.Size([4, 256, 256])   confidence threshold is the mean of uncertainty!!!!!!!!!!!!!!!
                     mask_all = torch.cat(((lab_label.unsqueeze(1) >= 0).float(), mask_u_aug.unsqueeze(1))) #torch.Size([8, 1, 256, 256])
                     mask_all = F.interpolate(mask_all, size=pred_all.shape[2:], mode='nearest')
 
