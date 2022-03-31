@@ -1,4 +1,10 @@
-# Author: Haoyu Xie
+'''
+Mean teacher with Region Contrast
+Related Paper: https://arxiv.org/abs/2104.04465
+The code(Version 1.0) is created by Haoyu Xie
+Version 1.1: Add tensorboard(Updated by Changqi Wang on Mar 22, 2022)
+
+ '''
 import os
 from pathlib import Path
 from imageio import save
@@ -22,6 +28,9 @@ import numpy as np
 from generalframeworks.meter.meter import AverageValueMeter, Meter
 from generalframeworks.augmentation.transform import batch_transform, generate_cut
 from generalframeworks.loss.loss import attention_threshold_loss, compute_reco_loss
+from utils.utils import iterator_
+
+from tensorboardX import SummaryWriter
 
 
 ##### Config Preparation #####
@@ -29,8 +38,8 @@ warnings.filterwarnings('ignore')
 parser_args = yaml_parser()
 
 #pprint('--> Input args:')
-with open('./config/reco_config.yaml', 'r') as f:
-    config = yaml.load(f.read(), Loader=yaml.FullLoader)
+with open('./config/MT_ReCo_config.yaml', 'r') as f:
+    config = yaml.load(f.read())
 config = dict_merge(config, parser_args, True)
 #pprint(config)
 print('Hello, it is {} now'.format(now_time()))
@@ -40,15 +49,19 @@ if not os.path.exists(save_dir):
     os.makedirs(save_dir)
 with open(save_dir + '/config.yaml', 'w') as outfile:
     yaml.dump(config, outfile, default_flow_style=False)
+
+##### Tensorboard #####
+writer = SummaryWriter(save_dir)
+
 ##### Init Random Seed #####
 fix_all_seed(int(config['Seed']))                   
 
 if __name__ == '__main__':
     ##### Dataset Preparation #####
-    make_ACDC_list(dataset_dir=config['Dataset']['root_dir'], save_dir=save_dir, labeled_num=config['Labeled_Dataset']['num_patient']) # Make there dataset lists
-    train_l_dataset = ACDC_Dataset(root_dir=config['Dataset']['root_dir'], save_dir=save_dir, mode='label', meta_label=False)
-    train_u_dataset = ACDC_Dataset(root_dir=config['Dataset']['root_dir'], save_dir=save_dir,mode='unlabel', meta_label=False)  
-    val_dataset = ACDC_Dataset(root_dir=config['Dataset']['root_dir'], save_dir=save_dir, mode='val', meta_label=False) 
+    make_ACDC_list(dataset_dir=config['Dataset']['root_dir'], labeled_num=config['Labeled_Dataset']['num_patient']) # Make there dataset lists
+    train_l_dataset = ACDC_Dataset(root_dir=config['Dataset']['root_dir'], mode='label', meta_label=False)
+    train_u_dataset = ACDC_Dataset(root_dir=config['Dataset']['root_dir'], mode='unlabel', meta_label=False)  
+    val_dataset = ACDC_Dataset(root_dir=config['Dataset']['root_dir'], mode='val', meta_label=False) 
     train_l_loader = DataLoader(train_l_dataset,
                                 batch_size=config['Labeled_Dataset']['batch_size'], 
                                 sampler=sampler.RandomSampler(data_source=train_l_dataset),
@@ -74,7 +87,8 @@ if __name__ == '__main__':
 
     ##### Metrics Initization #####
     max_epoch = config['Training_Setting']['epoch']
-    iter_max = len(train_l_loader)
+    # iter_max = len(train_l_loader)
+    iter_max = len(train_u_loader)
     lab_dice = AverageValueMeter(num_class=config['Network']['num_class'])
     unlab_dice = AverageValueMeter(num_class=config['Network']['num_class'])
     val_dice = AverageValueMeter(num_class=config['Network']['num_class'])
@@ -91,8 +105,10 @@ if __name__ == '__main__':
         cost = np.zeros(3)
         dice_lab = []
         dice_unlab = []
-        train_lab_iter = iter(train_l_loader)
-        train_unlab_iter = iter(train_u_loader)
+        # train_lab_iter = iter(train_l_loader)
+        # train_unlab_iter = iter(train_u_loader)
+        train_lab_iter = iterator_(train_l_loader)
+        train_unlab_iter = iterator_(train_u_loader)
         
         model.train()
         ema.model.train()
@@ -101,10 +117,10 @@ if __name__ == '__main__':
         val_dice.reset()
         train_iter_tqdm = tqdm_(range(iter_max))
         for i in train_iter_tqdm:
-            lab_image, lab_label = train_lab_iter.next()
+            lab_image, lab_label = train_lab_iter.__next__()
             lab_image, lab_label = lab_image.to(device), lab_label.to(device) #torch.Size([4, 1, 256, 256]) torch.Size([4, 256, 256])
 
-            unlab_image, unlab_label = train_unlab_iter.next()
+            unlab_image, unlab_label = train_unlab_iter.__next__()
             unlab_image, unlab_label = unlab_image.to(device), unlab_label.to(device) #torch.Size([4, 1, 256, 256])
 
             #unlab_label_oh = class2one_hot(unlab_label, num_class=config['Network']['num_class'])#torch.Size([4, 4, 256, 256])
@@ -211,10 +227,16 @@ if __name__ == '__main__':
         print('\n  EPOCH | TRAIN  |SUP_LOSS|USP_LOSS|RCO_LOSS| DISC_1 | DISC_2 | DISC_3 |DSIC_AVG| \n   {:03d}  |        | {:.4f} | {:.4f} | {:.4f} | {:.4f} | {:.4f} | {:.4f} | {:.4f} |\n        |  Test  |  Loss  | DISC_1 | DISC_2 | DISC_3 |DISC_AVG|TOP_DISC|\n        |        | {:.4f} | {:.4f} | {:.4f} | {:.4f} | {:.4f} | {:.4f} |'\
             .format(epoch, avg_cost[epoch][0], avg_cost[epoch][1], avg_cost[epoch][2], avg_cost[epoch][3], avg_cost[epoch][4], avg_cost[epoch][5], avg_cost[epoch][6], avg_cost[epoch][7], avg_cost[epoch][8],\
                  avg_cost[epoch][9], avg_cost[epoch][10], avg_cost[epoch][11], avg_cost[:, 11].max()))
+        writer.add_scalar('Train_Loss/supervised_loss', avg_cost[epoch][0], epoch)
+        writer.add_scalar('Train_Loss/unsupervised_loss', avg_cost[epoch][1], epoch)
+        writer.add_scalar('Train_Loss/reco_loss', avg_cost[epoch][2], epoch)
+        dict = {f"DSC{n - 7}": avg_cost[epoch][n] for n in range(8, 12)}
+        writer.add_scalars('Valid_Loss/', dict, epoch)
         if avg_cost[epoch][11] >= avg_cost[:, 11].max():
             best_score = avg_cost[epoch][8: ]
             torch.save(ema.model.state_dict(), save_dir + '/model.pth')
     np.savetxt(save_dir + '/logging_avg_cost.npy', avg_cost, fmt='%.4f')
-    np.savetxt(save_dir + '/logging_best_score.npy', best_score, fmt='%.4f')
+    np.savetxt(save_dir + '/logging_best_score_{:3f}.npy'.format(best_score[3]), best_score, fmt='%.4f')
+
 
             

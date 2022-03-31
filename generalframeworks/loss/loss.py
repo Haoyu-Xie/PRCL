@@ -1,4 +1,13 @@
+<<<<<<< HEAD
 # Author: Haoyu Xie
+=======
+'''
+Version 1.0: Created by Haoyu Xie on Mar 18, 2022
+Version 1.1: Fixed some bugs(Updated by Changqi Wang on Mar 20, 2022)
+'''
+from turtle import pos
+from cv2 import contourArea
+>>>>>>> 40397552fd69e88c7910e2a6a4818b11a5051804
 import torch
 import torch.nn.functional as F
 import numpy as np
@@ -48,7 +57,7 @@ def compute_reco_loss(rep: torch.Tensor, label, mask, prob, strong_threshold=1.0
         seg_num_list.append(int(valid_pixel_seg.sum().item())) # valid pixel num on each class-dim
 
     #Compute regional contrastive loss
-    if len(seg_num_list) < 1: # in some rare cases, a small mini-batch only contain 1 or no semantic class
+    if len(seg_num_list) <= 1: # in some rare cases, a small mini-batch only contain 1 or no semantic class
         return torch.tensor(0.0)
     else:
         reco_loss = torch.tensor(0.0)
@@ -59,13 +68,9 @@ def compute_reco_loss(rep: torch.Tensor, label, mask, prob, strong_threshold=1.0
         for i in range(valid_seg):
             # Sample hard queries
             if len(seg_feat_hard_list[i]) > 0:
-                seg_hard_idx = torch.randint(len(seg_feat_hard_list), size=(num_queries, ))
-                # There is bug in original reco project. There is a sutuation, where the the num of hard feature is too small, the following condition may  fail being met. 
-                if seg_feat_hard_list[i].shape[0] < len(seg_feat_hard_list):
-                    continue
-                else:
-                    anchor_feat_hard = seg_feat_hard_list[i][seg_hard_idx]
-                    anchor_feat = anchor_feat_hard
+                seg_hard_idx = torch.randint(seg_feat_hard_list[i].shape[0], size=(num_queries, ))
+                anchor_feat_hard = seg_feat_hard_list[i][seg_hard_idx]          # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                anchor_feat = anchor_feat_hard
             else:
                 continue
 
@@ -74,7 +79,7 @@ def compute_reco_loss(rep: torch.Tensor, label, mask, prob, strong_threshold=1.0
                 # Generate index mask for the current query class; e.g. [0, 1, 2] -> [1, 2, 0] -> [2, 0, 1]
                 seg_mask = torch.cat(([seg_len[i: ], seg_len[: i]]))
                 # Computing similarity for each negative segment prototype (semantic class relation graph)
-                proto_sim = torch.cosine_similarity(seg_proto[seg_mask[0]].unsqueeze(0), seg_proto[seg_mask[1: ]], dim=1)
+                proto_sim = torch.cosine_similarity(seg_proto[seg_mask[0]].unsqueeze(0), seg_proto[seg_mask[1: ]], dim=1, eps=1e-6)
                 proto_prob = torch.softmax(proto_sim / temp, dim=0)
                 # Samplin negative keys based on the generated distribution [num_queries * num_negatives]
                 negative_dist = torch.distributions.categorical.Categorical(probs=proto_prob)
