@@ -320,6 +320,7 @@ class Uncertainty_Aware_Reco(nn.Module):
 
         # Compute valid binary mask for each pixel
         valid_pixel = label * mask
+        self.tmp_valid_pixel = valid_pixel.clone().float()
         # Permute representation for indexing: [batch, rep_h, rep_w, feature_channel]
         rep = rep.permute(0, 2, 3, 1)
         uncertainty_l = uncertainty_l.permute(0, 2, 3, 1)
