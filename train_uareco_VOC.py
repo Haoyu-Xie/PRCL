@@ -16,7 +16,7 @@ from generalframeworks.networks.deeplabv3.deeplabv3 import DeepLabv3Plus, DeepLa
 from generalframeworks.networks.ema import EMA
 from generalframeworks.scheduler.my_lr_scheduler import PolyLR
 from generalframeworks.meter.meter import ConfMatrix
-from generalframeworks.loss.loss import Uncertainty_Aware_Reco, Attention_Threshold_Loss
+from generalframeworks.loss.loss import Reco_Loss, Uncertainty_Aware_Reco, Attention_Threshold_Loss
 from generalframeworks.augmentation.transform import generate_cut
 from generalframeworks.utils import label_onehot, fix_all_seed, tqdm_, apply_dropout
 import torch.multiprocessing as mp
@@ -63,6 +63,7 @@ def main(rank, config):
         avg_cost = np.zeros((total_epoch, 10))
         iteration = 0
         best_iu = 0
+        valid_pixel_num = np.zeros((total_epoch, data_loader.num_segments))
         writer = SummaryWriter(save_dir + '/logs')
 
     ##### Training #####
@@ -171,6 +172,9 @@ def main(rank, config):
                 cost[1] = unsup_loss.item()
                 cost[2] = contrastive_loss.item()
                 avg_cost[index, :3] += cost / train_epoch
+                tmp_valid_num = uareco_loss.tmp_valid_pixel.view(uareco_loss.tmp_valid_pixel.shape[0], uareco_loss.tmp_valid_pixel.shape[1], -1).sum(-1).mean(0)
+                valid_pixel_num[index] += tmp_valid_num.cpu().numpy() / train_epoch
+
                 iteration += 1
                 # Progress Bar
                 train_epoch_tqdm.set_description('Training: Sup_loss:{:.3f}|Unsup_loss:{:.3f}|Reco_loss:{:.3f}|Total_loss'\
@@ -181,8 +185,17 @@ def main(rank, config):
         if dist.get_rank() == 0:
             avg_cost[index, 3:5] = l_conf_mat.get_metrics()
             avg_cost[index, 5:7] = u_conf_mat.get_metrics()
-            dict_train = {'sup_loss': avg_cost[index, 0], 'unsup_loss': avg_cost[index, 1], 'reco_loss': avg_cost[index, 2], 'total_loss': avg_cost[index, 3]}
-            writer.add_scalars('Train_loss', dict_train, index)
+            sup_loss_dict = {'sup_loss': avg_cost[index, 0]}
+            unsup_loss_dict = {'unsup_loss': avg_cost[index, 1]}
+            contrastive_loss_dict = {'uareco_loss': avg_cost[index, 2]}
+            total_loss_dict = {'total_loss': (avg_cost[index, 0] + avg_cost[index, 1] + avg_cost[index, 2]) / 3}
+            valid_pixel_num_dict = {'{}'.format(c): valid_pixel_num[index][c] for c in range(data_loader.num_segments)}
+            valid_pixel_num_dict['total_num'] = valid_pixel_num[index].sum() 
+            writer.add_scalars('Train_loss', sup_loss_dict, index)
+            writer.add_scalars('Train_loss', unsup_loss_dict, index)
+            writer.add_scalars('Train_loss', contrastive_loss_dict, index)
+            writer.add_scalars('Train_loss', total_loss_dict, index)
+            writer.add_scalars('Valid_pixel_num', valid_pixel_num_dict, index)
             
             ##### Evaluate on validation set #####
             with torch.no_grad():
