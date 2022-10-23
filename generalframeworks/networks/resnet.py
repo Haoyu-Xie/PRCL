@@ -16,7 +16,7 @@ model_urls = {
     "resnet18": "/path/to/resnet18.pth",
     "resnet34": "/path/to/resnet34.pth",
     "resnet50": "/path/to/resnet50.pth",
-    "resnet101": "/mnt/lustrenew/zhengmingkai/PRCL/pretrained/resnet101_stem.pth",
+    "resnet101": "path/to/resnet101.pth",
     "resnet152": "/path/to/resnet152.pth",
 }
 
