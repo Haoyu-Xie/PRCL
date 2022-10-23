@@ -13,7 +13,7 @@ Extract the folder `JPEGImages` and `SegmentationClassAug` as follows:
 │   │   |   |   ├──train_aug.txt
 
 ```
-Please download the model pretrained on Imagenet from [Resnet101](https://download.pytorch.org/models/resnet101-63fe2227.pth)
+Please download the model pretrained on Imagenet from [here](https://download.pytorch.org/models/resnet101-63fe2227.pth) and change the dir in the train_res100.py.
 
 ## Run
 Running the following script: 
