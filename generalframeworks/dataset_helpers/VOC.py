@@ -83,7 +83,7 @@ class Pascal_VOC_Dataset(DatasetCache):
         return len(self.idx_list)
             
 class BuildData():
-    def __init__(self, data_path='/mnt/lustrenew/zhengmingkai/PRCL/data/voc', num_labels=60, seed=0):
+    def __init__(self, data_path='./', num_labels=60, seed=0):
         self.data_path = data_path
         self.image_size = [513, 513]
         self.crop_size = [321, 321]
