@@ -166,6 +166,6 @@ def make_VOC_list(dataset_dir: str, labeled_num: int, unlabeled_num: int, random
     f.close()
 
 if __name__ =='__main__':
-    make_VOC_list(dataset_dir='/home/xiaoluoxi/PycharmProjects/Dirty/data/VOCdevkit/VOC2012',
-                    labeled_num=60, unlabeled_num=1102, random_seed=0, save_dir='/home/xiaoluoxi/PycharmProjects/Dirty/data/VOCdevkit/VOC2012/prefix/my_big_subset')
+    make_VOC_list(dataset_dir='./',
+                    labeled_num=60, unlabeled_num=1102, random_seed=0, save_dir='./')
                     
