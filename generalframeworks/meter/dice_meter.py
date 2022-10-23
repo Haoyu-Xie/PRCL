@@ -4,7 +4,7 @@ import sys
 
 from torch._C import default_generator
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))  
-# __file__获取执行文件相对路径，整行为取上一级的上一级目录
+
 sys.path.append(BASE_DIR)
 import torch.nn.functional as F
 from generalframeworks.utils import one_hot, intersection, class2one_hot, probs2class, probs2one_hot
