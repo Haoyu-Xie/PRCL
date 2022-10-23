@@ -1,0 +1,54 @@
+Network: 
+  name: DeepLabv3Plus
+  num_class: 21
+
+EMA:
+  alpha: 0.99
+
+Optim:
+  lr: 3.2e-3
+  uncer_lr: 5e-5
+  weight_decay: 5e-4
+
+Lr_Scheduler:
+  name: PolyLR
+  step_size: 90
+  gamma: 0.1
+
+Dataset:
+  name: pascal_voc
+  root_dir: /mnt/lustrenew/zhengmingkai/PRCL/data/voc
+  num_labels: 92
+  batch_size: 2
+  crop_size: !!python/tuple [321,321]
+  scale_size: !!python/tuple [0.5,1.5]
+  mix_mode: classmix
+
+Training_Setting:
+  epoch: 200
+  save_dir: ./checkpoints/weak_reco_92
+
+Seed: 0
+
+Prcl_Loss:
+  is_available: True
+  warm_up: 0
+  strong_threshold: 0.97
+  test_strong_threshold: 0.8
+  weak_threshold: 0.7
+  temp: 0.5
+  num_queries: 256
+  num_negatives: 512
+  num_positives: 512
+  lambda: 0.1
+
+Ramp_Scheduler:
+  begin_epoch: 0
+  max_epoch: 200
+  max_value: 1.0
+  min_value: 0
+  ramp_mult: -5.0
+
+Distributed:
+  world_size: 8
+  gpu_id: 0,1,2,3,4,5,6,7
