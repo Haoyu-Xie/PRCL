@@ -1,4 +1,5 @@
 # Boosting Pixel-Wise Contrastive Learning with Probabilitic Representations
+Please extract the dataset as follows:
 ```data
 ├── data
 │   ├── VOCdevkit
