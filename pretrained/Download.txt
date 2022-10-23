@@ -1,1 +1,1 @@
-Please download the pretrained model on Imagenet following README.md
+Please download the model pretrained on Imagenet following README.md
