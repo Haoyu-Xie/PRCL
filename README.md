@@ -10,4 +10,8 @@
 │   │   |   |   ├──train_aug.txt
 
 ```
+
+Running the following script: 
+```
 run ./script/batch_train.sh
+```
