@@ -18,7 +18,7 @@ Lr_Scheduler:
 Dataset:
   name: pascal_voc
   root_dir: ./
-  num_labels: 92
+  num_labels: 183
   batch_size: 2
   crop_size: !!python/tuple [321,321]
   scale_size: !!python/tuple [0.5,1.5]
