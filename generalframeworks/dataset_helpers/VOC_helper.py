@@ -263,7 +263,7 @@ class Pascal_VOC_Dataset(Dataset):
 
 class BuildDataLoader():
     def __init__(self, batch_size=6, num_labels=5, distributed=False, seed=0):
-        self.data_path = '/home/xiaoluoxi/PycharmProjects/Dirty/data/VOCdevkit/VOC2012'
+        self.data_path = './'
         self.image_size = [513, 513]
         self.crop_size = [321, 321]
         self.num_segments = 21
