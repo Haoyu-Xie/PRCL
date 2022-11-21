@@ -1,6 +1,6 @@
 # Boosting Pixel-Wise Contrastive Learning with Probabilitic Representations
 This repository contains the source code of PRCL and baselines from the paper, [Boosting Pixel-Wise Contrastive Learning with Probabilitic Representations] (https://arxiv.org/abs/2210.14670), proposed by Haoyu Xie, Changqi Wang, Mingkai Zheng, Minjing Dong, Shan You, Chong Fu, and Chang Xu.
-
+The paper is accepted to AAAI 2023.
 ## Updates
 **Nov. 2022** -- Upload the sorce code.
 
@@ -52,6 +52,7 @@ All hyper-parameters used in the code are shown below:
 | `max_value`     | the max value of scheduler \lambda_c  |  `1.0`  |
 | `min_value`     | the min value of scheduler \lambda_c  |  `0`  |
 | `ramp_mult`     | the \alpha of scheduler \lambda_c  |  `-5.0`  |
+
 ## Run
 You can run our code with a single GPU or multiple GPUs.
 - For single GPU users, please run prcl_sig.py
@@ -60,13 +61,23 @@ You can run our code with a single GPU or multiple GPUs.
 run ./script/batch_train.sh
 ```
 
+## Acknowledgement
+The data processing and augmentation (CutMix, CutOut, and ClassMix) are borrowed from ReCo.
+- ReCo: https://github.com/lorenmt/reco
+Thanks a lot for their splendid work!
+
 ## Citation
 If you think this work is useful for you and your research, please considering citing the following:
 ```
-@article{xie2022boosting,
+@article{PRCL,
   title={Boosting Semi-Supervised Semantic Segmentation with Probabilistic Representations},
   author={Xie, Haoyu and Wang, Changqi and Zheng, Mingkai and Dong, Minjing and You, Shan and Xu, Chang},
   journal={arXiv preprint arXiv:2210.14670},
   year={2022}
 }
 ```
+
+## Contact
+If you have any questions or find any bugs, please feel free to contact us.
+- Haoyu Xie, [895852154@qq.com](mailto:895852154@qq.com)
+- Changqi Wang, [wangchangqi98@gmail.com](mailto:wangchangqi98@gmail.com)
