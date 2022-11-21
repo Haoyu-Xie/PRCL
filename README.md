@@ -37,10 +37,21 @@ Folders `train` and `val` under `leftImg8bit` contains training and validation i
 All hyper-parameters used in the code are shown below:
 |Name        | Discription  |  Value |
 | ------------- |-------------| -----|
-| `alpha`     | hyper-parameter in EMA model  |  0.99  |
-| `lr`     | learning rate of backbone, prediction head, and project head  |  3.2e-3  |
-| `uncer_lr`     | learning rate of probability head  |  5e-5  |
-
+| `alpha`     | hyper-parameter in EMA model  |  `0.99`  |
+| `lr`     | learning rate of backbone, prediction head, and project head  |  `3.2e-3`  |
+| `uncer_lr`     | learning rate of probability head  |  `5e-5`  |
+| `uncer_lr`     | learning rate of probability head  |  `5e-5`  |
+| `un_threshold`     | threshold in unsupervised loss  |  `0.97`  |
+| `weak_threshold`     | weak threshold in PRCL loss  |  `0.7`  |
+| `strong_threshold`     | strong threshold in PRCL loss  |  `0.8`  |
+| `temp`     | temperature in PRCL loss  |  `0.7`  |
+| `num_queries`     | number of queries in PRCL loss  |  `256`  |
+| `num_negatives`     | number of negatives in PRCL loss  |  `512`  |
+| `begin_epoch`     | the begin epoch of scheduler \lambda_c  |  `0`  |
+| `max_epoch`     | the end epoch of scheduler \lambda_c  |  `200`  |
+| `max_value`     | the max value of scheduler \lambda_c  |  `1.0`  |
+| `min_value`     | the min value of scheduler \lambda_c  |  `0`  |
+| `ramp_mult`     | the \alpha of scheduler \lambda_c  |  `-5.0`  |
 ## Run
 You can run our code with a single GPU or multiple GPUs.
 - For single GPU users, please run prcl_sig.py
