@@ -36,7 +36,7 @@ Folders `train` and `val` under `leftImg8bit` contains training and validation i
 ## Hyper-parameters
 All hyper-parameters used in the code are shown below:
 |Name        | Discription  |  Value |
-| ------------- |-------------| -----|
+| :-: |:-:| :-:|
 | `alpha`     | hyper-parameter in EMA model  |  `0.99`  |
 | `lr`     | learning rate of backbone, prediction head, and project head  |  `3.2e-3`  |
 | `uncer_lr`     | learning rate of probability head  |  `5e-5`  |
@@ -47,11 +47,11 @@ All hyper-parameters used in the code are shown below:
 | `temp`     | temperature in PRCL loss  |  `0.7`  |
 | `num_queries`     | number of queries in PRCL loss  |  `256`  |
 | `num_negatives`     | number of negatives in PRCL loss  |  `512`  |
-| `begin_epoch`     | the begin epoch of scheduler \lambda_c  |  `0`  |
-| `max_epoch`     | the end epoch of scheduler \lambda_c  |  `200`  |
-| `max_value`     | the max value of scheduler \lambda_c  |  `1.0`  |
-| `min_value`     | the min value of scheduler \lambda_c  |  `0`  |
-| `ramp_mult`     | the \alpha of scheduler \lambda_c  |  `-5.0`  |
+| `begin_epoch`     | the begin epoch of scheduler $\lambda_c$  |  `0`  |
+| `max_epoch`     | the end epoch of scheduler $\lambda_c$  |  `200`  |
+| `max_value`     | the max value of scheduler $\lambda_c$  |  `1.0`  |
+| `min_value`     | the min value of scheduler $\lambda_c$  |  `0`  |
+| `ramp_mult`     | the \alpha of scheduler $\lambda_c$  |  `-5.0`  |
 
 ## Run
 You can run our code with a single GPU or multiple GPUs.
@@ -64,6 +64,7 @@ run ./script/batch_train.sh
 ## Acknowledgement
 The data processing and augmentation (CutMix, CutOut, and ClassMix) are borrowed from ReCo.
 - ReCo: https://github.com/lorenmt/reco
+
 Thanks a lot for their splendid work!
 
 ## Citation
