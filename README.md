@@ -61,7 +61,7 @@ All hyper-parameters used in the code are shown below:
 | `un_threshold`     | threshold in unsupervised loss  |  `0.97`  |
 | `weak_threshold`     | weak threshold in PRCL loss  |  `0.7`  |
 | `strong_threshold`     | strong threshold in PRCL loss  |  `0.8`  |
-| `temp`     | temperature in PRCL loss  |  `0.7`  |
+| `temp`     | temperature in PRCL loss  |  `100`  |
 | `num_queries`     | number of queries in PRCL loss  |  `256`  |
 | `num_negatives`     | number of negatives in PRCL loss  |  `512`  |
 | `begin_epoch`     | the begin epoch of scheduler $\lambda_c$  |  `0`  |
