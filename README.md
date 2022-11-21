@@ -17,7 +17,6 @@ Extract the folder `JPEGImages` and `SegmentationClassAug` as follows:
 │   │   |   ├──prefix
 │   │   |   |   ├──val.txt
 │   │   |   |   ├──train_aug.txt
-
 ```
 - For CityScapes, please download the original images and labels from the [official CityScapes site](https://www.cityscapes-dataset.com/downloads/): `leftImg8bit_trainvaltest.zip` and `gtFine_trainvaltest.zip`.
 Extract the folder `leftImg8bit_trainvaltest.zip` and `gtFine_trainvaltest.zip` as follows:
@@ -31,7 +30,25 @@ Extract the folder `leftImg8bit_trainvaltest.zip` and `gtFine_trainvaltest.zip` 
 │   │   ├──val
 ```
 Folders `train` and `val` under `leftImg8bit` contains training and validation images while folders `train` and `val` under `leftImg8bit` contains labels.
-- For pretrained models, please download the model pretrained on Imagenet from [here](https://download.pytorch.org/models/resnet101-63fe2227.pth) and change the dir in the train_res100.py.
+
+PRCL uses ResNet-101 pretrained on ImageNet, please download from [here](https://download.pytorch.org/models/resnet101-63fe2227.pth) and change the direction in corresponding python file.
+
+In order to install the correct environment, please run the following script:
+```
+conda create -n prcl python=3.8.5
+conda activate prcl
+pip install -r requirements.txt
+```
+It may takes a long time, take a break and have a cup of coffee!
+It is OK if you want to install environment manually, remember to check CAREFULLY!
+
+## Run
+You can run our code with a single GPU or multiple GPUs.
+- For single GPU users, please run prcl_sig.py
+- For multiple GPUs users, please run the following script: 
+```
+run ./script/batch_train.sh
+```
 
 ## Hyper-parameters
 All hyper-parameters used in the code are shown below:
@@ -52,14 +69,6 @@ All hyper-parameters used in the code are shown below:
 | `max_value`     | the max value of scheduler $\lambda_c$  |  `1.0`  |
 | `min_value`     | the min value of scheduler $\lambda_c$  |  `0`  |
 | `ramp_mult`     | the \alpha of scheduler $\lambda_c$  |  `-5.0`  |
-
-## Run
-You can run our code with a single GPU or multiple GPUs.
-- For single GPU users, please run prcl_sig.py
-- For multiple GPUs users, please run the following script: 
-```
-run ./script/batch_train.sh
-```
 
 ## Acknowledgement
 The data processing and augmentation (CutMix, CutOut, and ClassMix) are borrowed from ReCo.
