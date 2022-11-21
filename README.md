@@ -33,8 +33,29 @@ Extract the folder `leftImg8bit_trainvaltest.zip` and `gtFine_trainvaltest.zip` 
 Folders `train` and `val` under `leftImg8bit` contains training and validation images while folders `train` and `val` under `leftImg8bit` contains labels.
 - For pretrained models, please download the model pretrained on Imagenet from [here](https://download.pytorch.org/models/resnet101-63fe2227.pth) and change the dir in the train_res100.py.
 
+## Hyper-parameters
+All hyper-parameters used in the code are shown below:
+|Name        | Discription  |  Value |
+| ------------- |-------------| -----|
+| `alpha`     | hyper-parameter in EMA model  |  0.99  |
+| `lr`     | learning rate of backbone, prediction head, and project head  |  3.2e-3  |
+| `uncer_lr`     | learning rate of probability head  |  5e-5  |
+
 ## Run
-Running the following script: 
+You can run our code with a single GPU or multiple GPUs.
+- For single GPU users, please run prcl_sig.py
+- For multiple GPUs users, please run the following script: 
 ```
 run ./script/batch_train.sh
+```
+
+## Citation
+If you think this work is useful for you and your research, please considering citing the following:
+```
+@article{xie2022boosting,
+  title={Boosting Semi-Supervised Semantic Segmentation with Probabilistic Representations},
+  author={Xie, Haoyu and Wang, Changqi and Zheng, Mingkai and Dong, Minjing and You, Shan and Xu, Chang},
+  journal={arXiv preprint arXiv:2210.14670},
+  year={2022}
+}
 ```
