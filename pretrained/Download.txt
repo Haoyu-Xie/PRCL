@@ -1,1 +1,0 @@
-Please download the model pretrained on Imagenet following README.md
