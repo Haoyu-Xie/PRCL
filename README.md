@@ -88,6 +88,6 @@ If you think this work is useful for you and your research, please considering c
 ```
 
 ## Contact
-If you have any questions or find any bugs, please feel free to contact us.
+If you have any questions or meet any problems, please feel free to contact us.
 - Haoyu Xie, [895852154@qq.com](mailto:895852154@qq.com)
 - Changqi Wang, [wangchangqi98@gmail.com](mailto:wangchangqi98@gmail.com)
