@@ -43,8 +43,8 @@ def main():
         print(config)
 
     ##### Init Seed #####
-    random.seed(config['Seed'] + 1)
-    torch.manual_seed(config['Seed'] + 1)
+    random.seed(config['Seed'])
+    torch.manual_seed(config['Seed'])
     torch.backends.cudnn.deterministic = True
 
     ##### Load the dataset #####
