@@ -1,6 +1,6 @@
 # Boosting Pixel-Wise Contrastive Learning with Probabilitic Representations
 This repository contains the source code of PRCL and baselines from the paper, [Boosting Pixel-Wise Contrastive Learning with Probabilitic Representations](https://arxiv.org/abs/2210.14670), proposed by Haoyu Xie, Changqi Wang, Mingkai Zheng, Minjing Dong, Shan You, Chong Fu, and Chang Xu.
-The paper is accepted to **AAAI 2023.
+The paper is accepted to **AAAI 2023**.
 ## Updates
 **Nov. 2022** -- Upload the sorce code.
 
