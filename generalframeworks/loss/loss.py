@@ -28,16 +28,16 @@ class Prcl_Loss(nn.Module):
         super(Prcl_Loss, self).__init__()
         self.temp = temp
         self.mean = mean
-        self.num_queries = num_queries
-        self.num_negatives = num_negatives
+        self.num_queries = num_queries # anchor
+        self.num_negatives = num_negatives 
         self.strong_threshold = strong_threshold
     def forward(self, mu, sigma, label, mask, prob):
-        # we gather all representations (mu and sigma) cross mutiple GPUs during this progress
+        # We gather all representations (mu and sigma) cross mutiple GPUs during this progress
         mu_prt = concat_all_gather(mu) # For protoype computing on all cards (w/o gradients)
         sigma_prt = concat_all_gather(sigma)
         batch_size, num_feat, mu_w, mu_h = mu.shape
         num_segments = label.shape[1] #21
-        valid_pixel_all = label * mask
+        valid_pixel_all = label * mask # Valid rep (sampling strategy a)
         valid_pixel_all_prt = concat_all_gather(valid_pixel_all) # For protoype computing on all cards 
 
         # Permute representation for indexing" [batch, rep_h, rep_w, feat_num]
@@ -47,26 +47,26 @@ class Prcl_Loss(nn.Module):
         mu_prt = mu_prt.permute(0, 2, 3, 1)
         sigma_prt = sigma_prt.permute(0, 2, 3, 1)
 
-        mu_all_list = []
-        sigma_all_list = []
-        mu_hard_list = []
-        sigma_hard_list = []
-        num_list = []
-        proto_mu_list = []
+        mu_all_list = [] # all valid rep pool 
+        sigma_all_list = [] # all valid sigma pool 
+        mu_hard_list = [] # anchor pool
+        sigma_hard_list = [] 
+        num_list = [] # Valid num of each class
+        proto_mu_list = [] # Prototype
         proto_sigma_list = []
 
         for i in range(num_segments): #21
-            valid_pixel = valid_pixel_all[:, i]
-            valid_pixel_gather = valid_pixel_all_prt[:, i]
+            valid_pixel = valid_pixel_all[:, i] # on single card
+            valid_pixel_gather = valid_pixel_all_prt[:, i] # on multi card
             if valid_pixel.sum() == 0:
                 continue
             prob_seg = prob[:, i, :, :]
-            rep_mask_hard = (prob_seg < self.strong_threshold) * valid_pixel.bool() # Only on single card
-            # Prototype computing on all cards
+            rep_mask_hard = (prob_seg < self.strong_threshold) * valid_pixel.bool() # Anchor sampling (strategy b)
+            # Prototype calculation
             with torch.no_grad():
-                proto_sigma_ = 1 / torch.sum((1 / sigma_prt[valid_pixel_gather.bool()]), dim=0, keepdim=True)   
+                proto_sigma_ = 1 / torch.sum((1 / sigma_prt[valid_pixel_gather.bool()]), dim=0, keepdim=True)  # Equation 8
                 proto_mu_ = torch.sum((proto_sigma_ / sigma_prt[valid_pixel_gather.bool()]) \
-                    * mu_prt[valid_pixel_gather.bool()], dim=0, keepdim=True)
+                    * mu_prt[valid_pixel_gather.bool()], dim=0, keepdim=True) # Equation 7
                 proto_mu_list.append(proto_mu_)
                 proto_sigma_list.append(proto_sigma_)
 
@@ -78,7 +78,7 @@ class Prcl_Loss(nn.Module):
         
         # Compute Probabilistic Representation Contrastive Loss
         if (len(num_list) <= 1) : # in some rare cases, a small mini-batch only contain 1 or no semantic class
-            return torch.tensor(0.0) #+ 0 * mu.sum() + 0 * sigma.sum() # A trick for avoiding data leakage in DDP training
+            return torch.tensor(0.0) #+ 0 * mu.sum() + 0 * sigma.sum() # A trick for avoiding data leakage in DDP training, if you have the find unused gradient warning.
         else:
             prcl_loss = torch.tensor(0.0)
             proto_mu = torch.cat(proto_mu_list) # [c]
@@ -95,15 +95,15 @@ class Prcl_Loss(nn.Module):
                 else:
                     continue
                 with torch.no_grad():
-                    # Select negatives
+                    # Sampling negatives
                     id_mask = torch.cat(([seg_len[i: ], seg_len[: i]]))
                     proto_sim = mutual_likelihood_score(proto_mu[id_mask[0].unsqueeze(0)],
                                                         proto_mu[id_mask[1: ]],
                                                         proto_sigma[id_mask[0].unsqueeze(0)],
-                                                        proto_sigma[id_mask[1: ]])
-                    proto_prob = torch.softmax(proto_sim / self.temp, dim=0)
+                                                        proto_sigma[id_mask[1: ]]) # Calculate the similarity among prototypes
+                    proto_prob = torch.softmax(proto_sim / self.temp, dim=0) # The distribution of sampling (strategy c)
                     negative_dist = torch.distributions.categorical.Categorical(probs=proto_prob)
-                    samp_class = negative_dist.sample(sample_shape=[self.num_queries, self.num_negatives])
+                    samp_class = negative_dist.sample(sample_shape=[self.num_queries, self.num_negatives]) # Sampling negatives according the similarity
                     samp_num = torch.stack([(samp_class == c).sum(1) for c in range(len(proto_prob))], dim=1)
                     negative_num_list = num_list[i+1: ] + num_list[: i]
                     negative_index = negative_index_sampler(samp_num, negative_num_list)
@@ -169,7 +169,7 @@ class Prcl_Loss_single(nn.Module):
         
         # Compute Probabilistic Representation Contrastive Loss
         if (len(num_list) <= 1) : # in some rare cases, a small mini-batch only contain 1 or no semantic class
-            return torch.tensor(0.0) #+ 0 * mu.sum() + 0 * sigma.sum() # A trick for avoiding data leakage in DDP training
+            return torch.tensor(0.0)
         else:
             prcl_loss = torch.tensor(0.0)
             proto_mu = torch.cat(proto_mu_list) # [c]
@@ -213,7 +213,6 @@ class Prcl_Loss_single(nn.Module):
             return prcl_loss / valid_num
 
 #### Utils ####
-
 def negative_index_sampler(samp_num, seg_num_list):
     negative_index = []
     for i in range(samp_num.shape[0]):
@@ -224,6 +223,7 @@ def negative_index_sampler(samp_num, seg_num_list):
     
     return negative_index
 
+#### MLS ####
 def mutual_likelihood_score(mu_0, mu_1, sigma_0, sigma_1):
     '''
     Compute the MLS
