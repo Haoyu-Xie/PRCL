@@ -69,7 +69,6 @@ All hyper-parameters used in the code are shown below:
 | :-: |:-:| :-:|
 | `alpha`     | hyper-parameter in EMA model  |  `0.99`  |
 | `lr`     | learning rate of backbone, prediction head, and project head  |  `3.2e-3`  |
-| `lr`     | learning rate of probability head  |  `3.2e-3`  |
 | `uncer_lr`     | learning rate of probability head  |  `5e-5`  |
 | `un_threshold`     | threshold in unsupervised loss  |  `0.97`  |
 | `weak_threshold`     | weak threshold in PRCL loss  |  `0.7`  |
