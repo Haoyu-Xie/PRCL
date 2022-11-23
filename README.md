@@ -82,7 +82,7 @@ All hyper-parameters used in the code are shown below:
 | `min_value`     | the min value of scheduler $\lambda_c$  |  `0`  |
 | `ramp_mult`     | the $\alpha$ of scheduler $\lambda_c$  |  `-5.0`  |
 
-**It is worth noting that the uncer_lr is very sensitive and training may crash if uncer_lr is not fine-tuned carefully.**
+**It is worth noting that uncer_lr is very sensitive and training may crash if uncer_lr is not fine-tuned CAREFULLY.**
 
 ## Acknowledgement
 The data processing and augmentation (CutMix, CutOut, and ClassMix) are borrowed from ReCo.
