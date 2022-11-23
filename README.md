@@ -81,7 +81,7 @@ All hyper-parameters used in the code are shown below:
 | `max_epoch`     | the end epoch of scheduler $\lambda_c$  |  `200`  |
 | `max_value`     | the max value of scheduler $\lambda_c$  |  `1.0`  |
 | `min_value`     | the min value of scheduler $\lambda_c$  |  `0`  |
-| `ramp_mult`     | the \alpha of scheduler $\lambda_c$  |  `-5.0`  |
+| `ramp_mult`     | the $\alpha$ of scheduler $\lambda_c$  |  `-5.0`  |
 
 ## Acknowledgement
 The data processing and augmentation (CutMix, CutOut, and ClassMix) are borrowed from ReCo.
