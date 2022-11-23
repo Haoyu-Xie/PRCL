@@ -19,7 +19,7 @@ Dataset:
   name: VOC
   data_dir: ./VOC
   txt_dir: ./VOC_split
-  num_labels: 92
+  num_labels: 662
   batch_size: 2
   crop_size: !!python/tuple [321,321]
   scale_size: !!python/tuple [0.5,1.5]
