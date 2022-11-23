@@ -9,19 +9,16 @@ The paper is accepted to **AAAI 2023**.
 PRCL is evaluated with two datasets: PASCAL VOC 2012 and CityScapes. 
 - For PASCAL VOC, please download the original training images from the [official PASCAL site](http://host.robots.ox.ac.uk/pascal/VOC/voc2012/VOCtrainval_11-May-2012.tar): `VOCtrainval_11-May-2012.tar` and the augmented labels [here](http://vllab1.ucmerced.edu/~whung/adv-semi-seg/SegmentationClassAug.zip): `SegmentationClassAug.zip`. 
 Extract the folder `JPEGImages` and `SegmentationClassAug` as follows:
-```data
+```
 ├── data
 │   ├── VOCdevkit
 │   │   ├──VOC2012
 │   │   |   ├──JPEGImages
 │   │   |   ├──SegmentationClassAug
-│   │   |   ├──prefix
-│   │   |   |   ├──val.txt
-│   │   |   |   ├──train_aug.txt
 ```
 - For CityScapes, please download the original images and labels from the [official CityScapes site](https://www.cityscapes-dataset.com/downloads/): `leftImg8bit_trainvaltest.zip` and `gtFine_trainvaltest.zip`.
 Extract the folder `leftImg8bit_trainvaltest.zip` and `gtFine_trainvaltest.zip` as follows:
-```data
+```
 ├── data
 │   ├── cityscapes
 │   │   ├──leftImg8bit
@@ -32,7 +29,18 @@ Extract the folder `leftImg8bit_trainvaltest.zip` and `gtFine_trainvaltest.zip` 
 ```
 Folders `train` and `val` under `leftImg8bit` contains training and validation images while folders `train` and `val` under `leftImg8bit` contains labels.
 
-PRCL uses ResNet-101 pretrained on ImageNet, please download from [here](https://download.pytorch.org/models/resnet101-63fe2227.pth) and change the direction in corresponding python file.
+The data split folder of VOC and CityScapes is as follows:
+```
+├── VOC(CityScapes)_split
+│   ├── labeled number
+│   │   ├──seed
+│   │   |   ├──labeled_filename.txt
+│   │   |   ├──unlabeled_filename.txt
+│   │   |   ├──valid_filename.txt
+```
+You need to change the name of folders (labeled number and seed) according to your actual experiments.
+
+PRCL uses ResNet-101 pretrained on ImageNet and ResNet-101 with deep stem block, please download from [here](https://download.pytorch.org/models/resnet101-63fe2227.pth) for ResNet-101 and [here](https://drive.google.com/file/d/131dWv_zbr1ADUr_8H6lNyuGWsItHygSb/view?usp=sharing) for ResNet-101 stem. Remember to change the direction in corresponding python file.
 
 In order to install the correct environment, please run the following script:
 ```
@@ -45,7 +53,11 @@ It is OK if you want to install environment manually, remember to check CAREFULL
 
 ## Run
 You can run our code with a single GPU or multiple GPUs.
-- For single GPU users, please run prcl_sig.py
+- For single GPU users, please run the following script:
+```
+python prcl_sig.py --config config
+```
+You need to change the file name after --config according to your actual experiments.
 - For multiple GPUs users, please run the following script: 
 ```
 run ./script/batch_train.sh
