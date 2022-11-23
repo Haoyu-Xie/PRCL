@@ -40,7 +40,7 @@ The data split folder of VOC and CityScapes is as follows:
 ```
 You need to change the name of folders (labeled number and seed) according to your actual experiments.
 
-PRCL uses ResNet-101 pretrained on ImageNet and ResNet-101 with deep stem block, please download from [here](https://download.pytorch.org/models/resnet101-63fe2227.pth) for ResNet-101 and [here](https://drive.google.com/file/d/131dWv_zbr1ADUr_8H6lNyuGWsItHygSb/view?usp=sharing) for ResNet-101 stem. Remember to change the direction in corresponding python file.
+PRCL uses ResNet-101 pretrained on ImageNet and ResNet-101 with deep stem block, please download from [here](https://download.pytorch.org/models/resnet101-63fe2227.pth) for ResNet-101 and [here](https://drive.google.com/file/d/131dWv_zbr1ADUr_8H6lNyuGWsItHygSb/view?usp=sharing) for ResNet-101 stem. Remember to change the directory in corresponding python file.
 
 In order to install the correct environment, please run the following script:
 ```
