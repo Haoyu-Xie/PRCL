@@ -19,6 +19,7 @@ import yaml
 import os
 import time
 import torchvision.models as models
+from generalframeworks.networks import resnet
 import argparse
 import random
 
@@ -77,6 +78,10 @@ def main():
     backbone = models.resnet101()
     ckpt = torch.load('./pretrained/resnet101.pth', map_location='cpu')
     backbone.load_state_dict(ckpt)
+            
+    # for Resnet-101 stem users
+    #backbone = resnet.resnet101(pretrained=True)
+
     model = Model_with_un(backbone, num_classes=config['Network']['num_class'], output_dim=256, ema_alpha=config['EMA']['alpha'], config=config)
     model = nn.SyncBatchNorm.convert_sync_batchnorm(model).cuda(local_rank) # Added
     model = DistributedDataParallel(model, device_ids=[torch.cuda.current_device()], find_unused_parameters=True)
