@@ -62,7 +62,7 @@ You need to change the file name after --config according to your actual experim
 ```
 run ./script/batch_train.sh
 ```
-
+We provide 662 labels for VOC and 150 labels for CityScapes, the seed in our experiments is 3407. You can change the label rate and seed as you like, remember to change the corresponding config files and data_split directory.
 ## Hyper-parameters
 All hyper-parameters used in the code are shown below:
 |Name        | Discription  |  Value |
