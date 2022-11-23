@@ -1,6 +1,7 @@
 # Boosting Pixel-Wise Contrastive Learning with Probabilitic Representations (AAAI 2023)
 ![https://github.com/Haoyu-Xie/PRCL/blob/main/PRCL.gif](https://github.com/Haoyu-Xie/PRCL/blob/main/PRCL.gif)
 This repository contains the source code of **PRCL** from the paper [Boosting Pixel-Wise Contrastive Learning with Probabilitic Representations](https://arxiv.org/abs/2210.14670).
+
 In this paper, we redefine the representation in pixel-wise contrastive learning from a perspective of probability theory. We consider the probability and model the representation as random variable, namely Probabilistic Representation. 
 ## Updates
 **Nov. 2022** -- Upload the sorce code.
