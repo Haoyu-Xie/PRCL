@@ -55,7 +55,7 @@ It is OK if you want to install environment manually, remember to check CAREFULL
 You can run our code with a single GPU or multiple GPUs.
 - For single GPU users, please run the following script:
 ```
-python prcl_sig.py --config config
+python prcl_sig.py [--config]
 ```
 You need to change the file name after --config according to your actual experiments.
 - For multiple GPUs users, please run the following script: 
