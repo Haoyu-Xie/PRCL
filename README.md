@@ -69,7 +69,7 @@ All hyper-parameters used in the code are shown below:
 | :-: |:-:| :-:|
 | `alpha`     | hyper-parameter in EMA model  |  `0.99`  |
 | `lr`     | learning rate of backbone, prediction head, and project head  |  `3.2e-3`  |
-| `uncer_lr`     | learning rate of probability head  |  `5e-5`  |
+| `lr`     | learning rate of probability head  |  `3.2e-3`  |
 | `uncer_lr`     | learning rate of probability head  |  `5e-5`  |
 | `un_threshold`     | threshold in unsupervised loss  |  `0.97`  |
 | `weak_threshold`     | weak threshold in PRCL loss  |  `0.7`  |
@@ -82,6 +82,8 @@ All hyper-parameters used in the code are shown below:
 | `max_value`     | the max value of scheduler $\lambda_c$  |  `1.0`  |
 | `min_value`     | the min value of scheduler $\lambda_c$  |  `0`  |
 | `ramp_mult`     | the $\alpha$ of scheduler $\lambda_c$  |  `-5.0`  |
+
+**It is worth noting that the uncer_lr is very sensitive and training may crash if uncer_lr is not fine-tuned carefully.**
 
 ## Acknowledgement
 The data processing and augmentation (CutMix, CutOut, and ClassMix) are borrowed from ReCo.
