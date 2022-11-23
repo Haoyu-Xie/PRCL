@@ -101,7 +101,7 @@ If you think this work is useful for you and your research, please considering c
   year={2022}
 }
 ```
-And more interest works based on Probabilistic Representations are coming soon. 👣
+More interesting works based on Probabilistic Representations are coming soon. 👣
 
 ## Contact
 If you have any questions or meet any problems, please feel free to contact us.
