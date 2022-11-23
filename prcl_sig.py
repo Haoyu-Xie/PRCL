@@ -18,6 +18,7 @@ import yaml
 import os
 import time
 import torchvision.models as models
+from generalframeworks.networks import resnet
 import argparse
 import random
 
@@ -66,6 +67,10 @@ def main(args):
     backbone = models.resnet101()
     ckpt = torch.load('./pretrained/resnet101.pth', map_location='cpu')
     backbone.load_state_dict(ckpt)
+            
+    # for Resnet-101 stem users
+    #backbone = resnet.resnet101(pretrained=True)
+
     model = Model_with_un_single(backbone, num_classes=config['Network']['num_class'], output_dim=256, ema_alpha=config['EMA']['alpha'], config=config).cuda()
 
     ##### Loss init #####
